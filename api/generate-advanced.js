@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,6 +11,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  handleGeneration(req, res);
+}
+
+async function handleGeneration(req, res) {
   try {
     const config = req.body || {};
     const topic = (config.topic || '').trim();
@@ -144,11 +148,14 @@ As ${topic} continues to develop, staying informed about trends and developments
 
 async function commitToGitHub(slug, content, topic) {
   const token = process.env.GITHUB_TOKEN;
-  const date = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
+  const timestamp = now.toISOString();
   
   const frontmatter = `---
 title: ${topic}
 date: ${date}
+timestamp: ${timestamp}
 ---
 
 `;
