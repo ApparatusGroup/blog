@@ -1,10 +1,14 @@
-export default async function handler(req, res) {
+﻿export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const target = process.env.GENERATE_PY_ENDPOINT || '/api/generate-article-python';
+    // Construct full URL for fetch (required in serverless environment)
+    const host = req.headers.host || 'blog-mu-opal-43.vercel.app';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const target = ${protocol}://System.Management.Automation.Internal.Host.InternalHost/api/generate-article-python;
+    
     const response = await fetch(target, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

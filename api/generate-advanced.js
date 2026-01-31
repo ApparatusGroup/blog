@@ -21,7 +21,11 @@ module.exports = async (req, res) => {
   const config = req.body || {};
 
   try {
-    const target = process.env.ADVANCED_PY_ENDPOINT || '/api/generate-advanced-python';
+    // Construct full URL for fetch (required in serverless environment)
+    const host = req.headers.host || 'blog-mu-opal-43.vercel.app';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const target = `${protocol}://${host}/api/generate-advanced-python`;
+    
     const response = await fetch(target, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

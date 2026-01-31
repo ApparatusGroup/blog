@@ -1,10 +1,14 @@
-export default async function handler(req, res) {
+﻿export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const target = process.env.UPLOAD_PY_ENDPOINT || '/api/upload-research-python';
+    // Construct full URL for fetch (required in serverless environment)
+    const host = req.headers.host || 'blog-mu-opal-43.vercel.app';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const target = ${protocol}://System.Management.Automation.Internal.Host.InternalHost/api/upload-research-python;
+    
     const response = await fetch(target, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
