@@ -1,5 +1,5 @@
-from orchestrator import Orchestrator
-from scheduler import SchedulerService
+from .orchestrator import Orchestrator
+from .scheduler import SchedulerService
 import argparse
 import os
 

@@ -1,8 +1,8 @@
 import random
-from agents.researcher import Researcher
-from agents.drafter import Drafter
-from agents.editor import Editor
-from publisher import Publisher
+from .agents.researcher import Researcher
+from .agents.drafter import Drafter
+from .agents.editor import Editor
+from .publisher import Publisher
 
 
 class Orchestrator:

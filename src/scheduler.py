@@ -2,7 +2,7 @@ import os
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
-from orchestrator import Orchestrator
+from .orchestrator import Orchestrator
 
 logger = logging.getLogger(__name__)
 
