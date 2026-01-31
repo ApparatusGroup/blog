@@ -62,6 +62,15 @@ date: {date_str}
         return slug
 
     def _excerpt(self, text, length=150):
+        import re
+        # Remove markdown headers
+        text = re.sub(r'^#+\s+', '', text, flags=re.MULTILINE)
+        # Remove markdown links
+        text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
+        # Remove emphasis
+        text = re.sub(r'[*_]{1,2}([^*_]+)[*_]{1,2}', r'\1', text)
+        # Clean whitespace
+        text = ' '.join(text.split())
         if len(text) <= length:
             return text
         return text[:length].rsplit(' ', 1)[0] + '...'
@@ -104,15 +113,17 @@ date: {date_str}
         remaining_posts = posts[1:] if len(posts) > 1 else []
         html_items = "\n".join([
             """
-            <article class="post-card">
-              <div class="post-image">📝</div>
-              <div class="post-content">
-                <div class="post-meta">{date}</div>
-                <h2><a href="{file}">{title}</a></h2>
-                <p>{excerpt}</p>
-                <a class="read-more" href="{file}">Read article →</a>
-              </div>
-            </article>
+            <a href="{file}" class="post-card-link">
+              <article class="post-card">
+                <div class="post-image">📝</div>
+                <div class="post-content">
+                  <div class="post-meta">{date}</div>
+                  <h2>{title}</h2>
+                  <p>{excerpt}</p>
+                  <span class="read-more">Read article →</span>
+                </div>
+              </article>
+            </a>
             """.format(date=p['date'], file=p['file'], title=p['title'], excerpt=p['excerpt']) 
             for p in remaining_posts
         ])
