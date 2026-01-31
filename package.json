@@ -2,6 +2,6 @@
   "name": "ai-agents-blog",
   "version": "0.1.0",
   "scripts": {
-    "vercel-build": "mkdir -p public && cp public/styles.css public/styles.css.backup 2>/dev/null || true && python -m venv .venv && .venv/bin/python -m pip install -r requirements.txt && .venv/bin/python -m src.main && cp public/styles.css.backup public/styles.css 2>/dev/null || true"
+    "vercel-build": "python -m venv .venv && .venv/bin/python -m pip install -r requirements.txt && .venv/bin/python -m src.main"
   }
 }

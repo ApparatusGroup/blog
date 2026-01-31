@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import frontmatter
 import markdown
+import shutil
 
 
 class Publisher:
@@ -11,10 +12,19 @@ class Publisher:
         self.public_dir = Path(public_dir)
         self.posts_dir = self.public_dir / "posts"
         self.posts_dir.mkdir(parents=True, exist_ok=True)
+        self._copy_static_assets()
 
     def _slugify(self, title):
         slug = title.lower().strip().replace(' ', '-')
         return ''.join(ch for ch in slug if ch.isalnum() or ch == '-')
+
+    def _copy_static_assets(self):
+        """Copy CSS and static assets to public directory."""
+        static_dir = Path(__file__).parent.parent / "static"
+        if static_dir.exists():
+            for item in static_dir.glob('*'):
+                if item.is_file():
+                    shutil.copy2(item, self.public_dir / item.name)
 
     def publish(self, edited):
         title = edited.get("title", "untitled")
