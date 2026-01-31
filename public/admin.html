@@ -862,9 +862,24 @@
       }
     }
 
-    window.deleteArticle = async (title) => {
-      if (!confirm(`Delete "${title}"?`)) return;
-      alert('Delete functionality requires backend API integration');
+    window.deleteArticle = async (slug) => {
+      if (!confirm(`Delete this article?`)) return;
+      try {
+        const response = await fetch('/api/delete-article', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Article deleted');
+          loadArticles();
+        } else {
+          alert('Error: ' + (result.error || 'Delete failed'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
     };
 
     window.deleteScheduled = async (id) => {
