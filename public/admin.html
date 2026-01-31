@@ -794,28 +794,39 @@
     }
 
     async function loadArticles() {
-      // In production, fetch from your API
-      const articles = [
-        { title: 'OpenAI Announces GPT-5 with Breakthrough Reasoning Capabilities', date: '2026-01-31' },
-        { title: "Tesla's New Battery Technology Promises 1000-Mile Range", date: '2026-01-30' },
-        { title: 'Google Achieves Quantum Supremacy with 1000-Qubit Processor', date: '2026-01-29' },
-      ];
-
-      document.getElementById('totalArticles').textContent = articles.length;
-      
-      const list = document.getElementById('articlesList');
-      list.innerHTML = articles.map(a => `
-        <div class="article-item">
-          <div class="article-info">
-            <h4>${a.title}</h4>
-            <p>${a.date}</p>
+      try {
+        const response = await fetch('/api/list-articles');
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load articles');
+        }
+        
+        const articles = data.articles || [];
+        document.getElementById('totalArticles').textContent = articles.length;
+        
+        const list = document.getElementById('articlesList');
+        if (articles.length === 0) {
+          list.innerHTML = '<p style="padding: 1rem; text-align: center; color: #666;">No articles yet. Generate your first article above!</p>';
+          return;
+        }
+        
+        list.innerHTML = articles.map(a => `
+          <div class="article-item">
+            <div class="article-info">
+              <h4>${a.title}</h4>
+              <p>${a.date}</p>
+            </div>
+            <div class="article-actions">
+              <button class="btn-small" onclick="window.open('/posts/${a.slug}', '_blank')">View</button>
+              <button class="btn-small btn-danger" onclick="deleteArticle('${a.slug}')">Delete</button>
+            </div>
           </div>
-          <div class="article-actions">
-            <button class="btn-small" onclick="window.open('/posts/${a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html', '_blank')">View</button>
-            <button class="btn-small btn-danger" onclick="deleteArticle('${a.title}')">Delete</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      } catch (err) {
+        console.error('Error loading articles:', err);
+        document.getElementById('articlesList').innerHTML = '<p style="padding: 1rem; color: red;">Error loading articles</p>';
+      }
     }
 
     async function loadScheduledPosts() {
