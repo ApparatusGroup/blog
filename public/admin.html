@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -397,7 +397,7 @@
 
       <!-- Generate Article -->
       <div class="section">
-        <h2>✍️ Create Article</h2>
+        <h2>âœï¸ Create Article</h2>
         <div id="generateSuccess" class="success" style="display: none;"></div>
         
         <!-- Writer Selection -->
@@ -406,7 +406,7 @@
           <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('tech')">
             <input type="radio" name="writer" value="tech" checked style="margin-right: 8px;">
             <div>
-              <h4 style="margin: 0 0 8px; color: #0a9e5b;">🚀 Tech News</h4>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">ðŸš€ Tech News</h4>
               <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Latest AI and emerging tech. Fast-paced, engaging, highlights innovation.</p>
             </div>
           </label>
@@ -414,7 +414,7 @@
           <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('journalism')">
             <input type="radio" name="writer" value="journalism" style="margin-right: 8px;">
             <div>
-              <h4 style="margin: 0 0 8px; color: #0a9e5b;">📰 Journalism</h4>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">ðŸ“° Journalism</h4>
               <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Long-form critical analysis. Heavy citations, investigative, balanced perspective.</p>
             </div>
           </label>
@@ -422,7 +422,7 @@
           <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('educational')">
             <input type="radio" name="writer" value="educational" style="margin-right: 8px;">
             <div>
-              <h4 style="margin: 0 0 8px; color: #0a9e5b;">📚 Educational</h4>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">ðŸ“š Educational</h4>
               <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Simplifies complex topics. Clear explanations, infographics, myth-busting.</p>
             </div>
           </label>
@@ -487,7 +487,7 @@
           <div style="margin-bottom: 16px;">
             <label style="display: block; padding: 40px; border: 2px dashed #e9ecef; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0a9e5b'" onmouseout="this.style.borderColor='#e9ecef'">
               <input type="file" id="documentUpload" multiple accept=".txt,.md,.pdf,.docx" style="display: none;" onchange="handleDocuments(event)" />
-              <span style="color: #6c757d;">📎 Drop files here or click to upload</span>
+              <span style="color: #6c757d;">ðŸ“Ž Drop files here or click to upload</span>
               <br><span style="font-size: 0.75rem; color: #9ca3af;">Supports: TXT, MD, PDF, DOCX</span>
             </label>
             <div id="documentsList" style="margin-top: 12px;"></div>
@@ -518,7 +518,7 @@
 
         <!-- Generate Button -->
         <button class="btn-secondary" onclick="generateAdvancedArticle()" style="width: 100%; padding: 16px; font-size: 1.0625rem;">
-          <span id="generateBtnText">✨ Generate Professional Article</span>
+          <span id="generateBtnText">âœ¨ Generate Professional Article</span>
         </button>
         
         <p style="text-align: center; color: #6c757d; font-size: 0.8125rem; margin-top: 12px;" id="estimatedTime">Estimated time: 2-3 minutes</p>
@@ -526,7 +526,7 @@
 
       <!-- Schedule Post -->
       <div class="section">
-        <h2>⏰ Schedule Future Posts</h2>
+        <h2>â° Schedule Future Posts</h2>
         <div id="scheduleSuccess" class="success" style="display: none;"></div>
         
         <div class="form-inline">
@@ -544,7 +544,7 @@
 
       <!-- Manage Articles -->
       <div class="section">
-        <h2>📝 Published Articles</h2>
+        <h2>ðŸ“ Published Articles</h2>
         <div id="articlesList" class="articles-list">
           <!-- Articles appear here -->
         </div>
@@ -718,7 +718,7 @@
       btn.innerHTML = '\ud83d\udd04 Generating (this may take several minutes)... <span class="loading"></span>';
 
       try {
-        const response = await fetch('/api/generate-advanced', {
+        const response = await fetch('/api/generate-advanced-python', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(config)
@@ -743,7 +743,7 @@
           }, 5000);
           loadArticles();
         } else {
-          alert(result.error || 'Generation failed. Please try smaller uploads.');
+          const msg = result.error + (result.details ? '\n\nDetails: ' + result.details : '') + (result.traceback ? '\n\nTraceback:\n' + result.traceback : ''); alert(msg);
         }
       } catch (err) {
         alert('Error generating article: ' + err.message);
@@ -867,3 +867,5 @@
   </script>
 </body>
 </html>
+
+
