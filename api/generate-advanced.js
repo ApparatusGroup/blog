@@ -199,4 +199,14 @@ timestamp: ${timestamp}
   if (!response.ok) {
     throw new Error(`GitHub error: ${response.status}`);
   }
+  
+  // Trigger Vercel deployment
+  const deployHook = process.env.VERCEL_DEPLOY_HOOK;
+  if (deployHook) {
+    try {
+      await fetch(deployHook, { method: 'POST' });
+    } catch (e) {
+      console.error('Deploy hook failed:', e.message);
+    }
+  }
 }
