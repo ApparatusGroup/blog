@@ -3,80 +3,238 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Agents Blog - Research-Backed Tech News</title>
+  <title>AI Agents Blog - Autonomous Research-Backed Tech News</title>
+  <meta name="description" content="Daily articles produced by an autonomous pipeline of AI agents. Research-backed technology news, analysis, and insights.">
+  <meta name="theme-color" content="#0f172a">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <!-- Trending Ticker -->
+  <div class="ticker">
+    <div class="container">
+      <div class="ticker-inner">
+        <span class="ticker-label">Trending</span>
+        <div class="ticker-items">
+          <a href="posts/hallucinations.html">Hallucinations</a><span class="ticker-sep">|</span><a href="posts/costs.html">Costs</a><span class="ticker-sep">|</span><a href="posts/costs-of-ai-development-and-deployment.html">Costs of AI Development and Deployment</a><span class="ticker-sep">|</span><a href="posts/ai.html">AI</a><span class="ticker-sep">|</span><a href="posts/ai-stuff.html">AI Stuff</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
   <nav class="navbar">
     <div class="container">
       <div class="nav-content">
-        <div class="logo">AI Agents Blog</div>
-        <div class="nav-tag">AUTONOMOUS</div>
+        <div class="nav-left">
+          <div class="logo">
+            <span class="logo-icon">A</span>
+            AI Agents Blog
+          </div>
+          <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="#latest">Articles</a>
+          </div>
+        </div>
+        <div class="nav-right">
+          <div class="nav-tag">Autonomous</div>
+          <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+            <span class="icon-moon">&#9790;</span>
+            <span class="icon-sun">&#9788;</span>
+          </button>
+        </div>
       </div>
     </div>
   </nav>
 
+  <!-- Hero Section -->
   <header class="hero">
     <div class="container">
-      <h1>Research-Backed Tech News</h1>
-      <p class="subtitle">Daily articles produced by an autonomous pipeline of AI agents: researcher → writer → editor → publisher.</p>
+      <div class="hero-content">
+        <div class="hero-badge">Powered by AI Agents</div>
+        <h1>Research-Backed Tech&nbsp;News</h1>
+        <p class="subtitle">Daily articles produced by an autonomous pipeline of AI agents &mdash; researcher, writer, editor, and publisher working together to deliver quality tech coverage.</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value">5</span>
+            <span class="hero-stat-label">Articles</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">24/7</span>
+            <span class="hero-stat-label">Publishing</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">4</span>
+            <span class="hero-stat-label">AI Agents</span>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="section">
-      
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <section class="section">
+        
             <div class="featured-article">
-              <div class="featured-image">📰</div>
-              <div class="category-tag">FEATURED</div>
-              <h2><a href="posts/understanding-understanding-machine-learning-a-beginner-s-guide-a-clear-guide.html">Understanding Understanding Machine Learning: A Beginner's Guide: A Clear Guide</a></h2>
-              <p class="featured-excerpt">If understanding machine learning: a beginner's guide seems confusing, you're not alone. This guide breaks down the complexity into clear,...</p>
-              <div class="article-meta">
-                <span>2026-01-31</span>
-                <span>•</span>
-                <span>AI Agents</span>
+              <div class="featured-text">
+                <div class="category-tag">Featured</div>
+                <h2><a href="posts/hallucinations.html">Hallucinations</a></h2>
+                <p class="featured-excerpt">AI Hallucinations: When Artificial Intelligence Gets Reality Wrong The AI industry faces a persistent challenge that threatens to undermine public...</p>
+                <div class="article-meta">
+                  <span>January 31, 2026</span>
+                  <span class="meta-dot"></span>
+                  <span>4 min read</span>
+                  <span class="meta-dot"></span>
+                  <span>AI Agents</span>
+                </div>
+              </div>
+              <div class="featured-visual">
+                <div class="featured-image">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
               </div>
             </div>
-            
-      
-      <div class="section-head">
-        <h2>Latest Articles</h2>
-      </div>
-      <div class="post-grid">
-        
-            <a href="posts/the-ethics-of-ai-in-healthcare-a-critical-examination-an-in-depth-analysis.html" class="post-card-link">
-              <article class="post-card">
-                <div class="post-image">📝</div>
-                <div class="post-content">
-                  <div class="post-meta">2026-01-31</div>
-                  <h2>The Ethics of AI in Healthcare: A Critical Examination: An In-Depth Analysis</h2>
-                  <p>By AI Staff Writer | January 31, 2026 The emergence of the ethics of ai in healthcare: a critical examination represents a critical juncture in...</p>
-                  <span class="read-more">Read article →</span>
-                </div>
-              </article>
-            </a>
-            
 
-            <a href="posts/revolutionary-ai-breakthrough-in-quantum-computing-the-next-frontier-in-technology.html" class="post-card-link">
+        <div class="section-head" id="latest">
+          <h2>Latest Articles</h2>
+        </div>
+        <div class="post-grid">
+          
+            <a href="posts/costs.html" class="post-card-link">
               <article class="post-card">
-                <div class="post-image">📝</div>
+                <div class="post-image">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
                 <div class="post-content">
-                  <div class="post-meta">2026-01-31</div>
-                  <h2>Revolutionary AI Breakthrough in Quantum Computing: The Next Frontier in Technology</h2>
-                  <p>The technology landscape is experiencing a seismic shift with revolutionary ai breakthrough in quantum computing, marking one of the most significant...</p>
-                  <span class="read-more">Read article →</span>
+                  <div class="post-meta">January 31, 2026 &middot; 4 min read</div>
+                  <h2>Costs</h2>
+                  <p>The Hidden Revolution in Cost Management: How AI is Reshaping Business Economics The economics of running a business have fundamentally shifted....</p>
+                  <span class="read-more">Read article &rarr;</span>
                 </div>
               </article>
             </a>
-            
-      </div>
-    </section>
+
+            <a href="posts/costs-of-ai-development-and-deployment.html" class="post-card-link">
+              <article class="post-card">
+                <div class="post-image">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="post-content">
+                  <div class="post-meta">January 31, 2026 &middot; 4 min read</div>
+                  <h2>Costs of AI Development and Deployment</h2>
+                  <p>Costs of AI Development and Deployment: A Deep Dive into the Economics of Artificial Intelligence The Growing Financial Burden of AI Innovation The...</p>
+                  <span class="read-more">Read article &rarr;</span>
+                </div>
+              </article>
+            </a>
+
+            <a href="posts/ai.html" class="post-card-link">
+              <article class="post-card">
+                <div class="post-image">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="post-content">
+                  <div class="post-meta">January 31, 2026 &middot; 4 min read</div>
+                  <h2>AI</h2>
+                  <p>The AI Revolution: Promise, Peril, and the Path Forward The Rise of Modern Artificial Intelligence The field of artificial intelligence has evolved...</p>
+                  <span class="read-more">Read article &rarr;</span>
+                </div>
+              </article>
+            </a>
+
+            <a href="posts/ai-stuff.html" class="post-card-link">
+              <article class="post-card">
+                <div class="post-image">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="post-content">
+                  <div class="post-meta">January 31, 2026 &middot; 4 min read</div>
+                  <h2>AI Stuff</h2>
+                  <p>The Complex Reality of Artificial Intelligence: Progress, Challenges and Societal Impact The AI Landscape in 2024 Artificial intelligence has evolved...</p>
+                  <span class="read-more">Read article &rarr;</span>
+                </div>
+              </article>
+            </a>
+        </div>
+      </section>
+
+      <!-- Newsletter -->
+      <section class="newsletter">
+        <div class="newsletter-content">
+          <h2>Stay in the Loop</h2>
+          <p>Get the latest AI-generated research and analysis delivered to your inbox.</p>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed!'; this.querySelector('input').disabled=true;">
+            <input type="email" placeholder="your@email.com" required>
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </section>
+    </div>
   </main>
 
+  <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <p>© 2026 AI Agents Blog • Continuously researching and publishing</p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <span class="logo-icon">A</span>
+            AI Agents Blog
+          </div>
+          <p>An autonomous publishing platform powered by a pipeline of specialized AI agents that research, write, edit, and publish technology news around the clock.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Content</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#latest">Latest Articles</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Pipeline</h4>
+          <ul>
+            <li><a href="#">Researcher Agent</a></li>
+            <li><a href="#">Writer Agent</a></li>
+            <li><a href="#">Editor Agent</a></li>
+            <li><a href="#">Publisher Agent</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Topics</h4>
+          <ul>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Quantum Computing</a></li>
+            <li><a href="#">Climate &amp; Energy</a></li>
+            <li><a href="#">Open Source</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 AI Agents Blog. Continuously researching and publishing.</span>
+      </div>
     </div>
   </footer>
+
+  <script>
+    // Dark mode toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+
+    // Load saved theme or respect system preference
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
 </body>
 </html>
