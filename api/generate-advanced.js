@@ -3,8 +3,6 @@
  * Handles multi-source, multi-writer article generation with quality controls
  */
 
-const { spawn, spawnSync } = require('child_process');
-const path = require('path');
 const fs = require('fs');
 
 module.exports = async (req, res) => {
@@ -20,141 +18,24 @@ module.exports = async (req, res) => {
     });
   }
 
-  const {
-    topic,
-    writer = 'tech',
-    length = 'medium',
-    tone = 'professional',
-    focus = 'overview',
-    links = [],
-    documents = [],
-    rawText = '',
-    multiPass = true,
-    factCheck = true,
-    humanize = true,
-    userId
-  } = req.body;
-
-  if (!topic) {
-    return res.status(400).json({ error: 'Topic is required' });
-  }
-
-  console.log(`Advanced generation: ${writer} writer for "${topic}"`);
-
-  // Create temporary config file
-  const configPath = path.join('/tmp', `writer-config-${Date.now()}.json`);
-  const config = {
-    topic,
-    writer,
-    length,
-    tone,
-    focus,
-    links,
-    documents,
-    rawText,
-    multiPass,
-    factCheck,
-    humanize,
-    userId
-  };
+  const config = req.body || {};
 
   try {
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-
-    // Run advanced writer (detect available python binary)
-    const candidates = [process.env.PYTHON_BINARY, 'python3', 'python'].filter(Boolean);
-    let pythonBin = null;
-    for (const candidate of candidates) {
-      const check = spawnSync(candidate, ['-V']);
-      if (!check.error) {
-        pythonBin = candidate;
-        break;
-      }
-    }
-
-    if (!pythonBin) {
-      return res.status(500).json({
-        error: 'Python runtime not available. Set PYTHON_BINARY or deploy with a Python runtime.'
-      });
-    }
-    const pythonProcess = spawn(pythonBin, [
-      path.join(process.cwd(), 'src', 'advanced_writer.py'),
-      configPath
-    ], {
-      env: {
-        ...process.env,
-        PYTHONPATH: process.cwd()
-      }
+    const target = process.env.ADVANCED_PY_ENDPOINT || '/api/generate-advanced-python';
+    const response = await fetch(target, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
     });
 
-    let output = '';
-    let errorOutput = '';
-
-    pythonProcess.stdout.on('data', (data) => {
-      output += data.toString();
-      console.log(data.toString());
-    });
-
-    pythonProcess.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-      console.error(data.toString());
-    });
-
-    pythonProcess.on('error', (err) => {
-      console.error('Failed to start python process:', err);
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to start Python process',
-        details: err.message
-      });
-    });
-
-    pythonProcess.on('close', (code) => {
-      // Cleanup
-      try {
-        fs.unlinkSync(configPath);
-      } catch (e) {
-        console.error('Failed to cleanup config file:', e);
-      }
-
-      if (code === 0) {
-        // Parse output for article title
-        const lines = output.split('\n');
-        const successLine = lines.find(line => line.includes('Published:'));
-        const title = successLine 
-          ? successLine.replace('Published:', '').trim()
-          : topic;
-
-        res.status(200).json({
-          success: true,
-          title,
-          message: 'Article generated and published successfully'
-        });
-      } else {
-        console.error('Python process failed:', errorOutput);
-        res.status(500).json({
-          success: false,
-          error: 'Generation failed',
-          details: (errorOutput || '').slice(0, 2000) || 'No error output'
-        });
-      }
-    });
-
+    const text = await response.text();
+    res.status(response.status).send(text);
   } catch (error) {
-    console.error('Advanced generation error:', error);
-    
-    // Cleanup on error
-    try {
-      if (fs.existsSync(configPath)) {
-        fs.unlinkSync(configPath);
-      }
-    } catch (e) {
-      // Ignore cleanup errors
-    }
-
+    console.error('Advanced generation proxy error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Failed to reach Python generation endpoint',
+      details: error.message
     });
   }
 };
