@@ -45,28 +45,28 @@ class Publisher:
         self._update_index()
         return str(html_filepath)
 
-        def _list_posts(self):
-                files = sorted(self.posts_dir.glob('*.md'), reverse=True)
-                posts = []
-                for p in files:
-                        try:
-                                with open(p, 'r', encoding='utf-8') as fh:
-                                        fm = frontmatter.load(fh)
-                                        title = fm.get('title') or p.stem
-                                        date = fm.get('date') or ''
-                                        content = (fm.content or '').strip()
-                                        excerpt = (content[:220] + '...') if len(content) > 220 else content
-                        except Exception:
-                                title = p.stem
-                                date = ''
-                                excerpt = ''
-                        posts.append({
-                                'title': title,
-                                'date': str(date),
-                                'excerpt': excerpt,
-                                'file': f"posts/{p.stem}.html",
-                        })
-                return posts
+    def _list_posts(self):
+        files = sorted(self.posts_dir.glob('*.md'), reverse=True)
+        posts = []
+        for p in files:
+            try:
+                with open(p, 'r', encoding='utf-8') as fh:
+                    fm = frontmatter.load(fh)
+                    title = fm.get('title') or p.stem
+                    date = fm.get('date') or ''
+                    content = (fm.content or '').strip()
+                    excerpt = (content[:220] + '...') if len(content) > 220 else content
+            except Exception:
+                title = p.stem
+                date = ''
+                excerpt = ''
+            posts.append({
+                'title': title,
+                'date': str(date),
+                'excerpt': excerpt,
+                'file': f"posts/{p.stem}.html",
+            })
+        return posts
 
     def _update_index(self):
         posts = self._list_posts()
