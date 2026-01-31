@@ -1,11 +1,9 @@
-/**
+﻿/**
  * Advanced Article Generation API
  * Handles multi-source, multi-writer article generation with quality controls
  */
 
-const fs = require('fs');
-
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -24,8 +22,8 @@ module.exports = async (req, res) => {
     // Construct full URL for fetch (required in serverless environment)
     const host = req.headers.host || 'blog-mu-opal-43.vercel.app';
     const protocol = host.includes('localhost') ? 'http' : 'https';
-    const target = `${protocol}://${host}/api/generate-advanced-python`;
-    
+    const target = ${protocol}://System.Management.Automation.Internal.Host.InternalHost/api/generate-advanced-python;
+
     const response = await fetch(target, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -42,4 +40,4 @@ module.exports = async (req, res) => {
       details: error.message
     });
   }
-};
+}
