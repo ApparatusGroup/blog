@@ -72,90 +72,90 @@ class Publisher:
             for p in posts
         ])
 
-                html = self._render_index_html(html_items)
+        html = self._render_index_html(html_items)
         with open(self.public_dir / 'index.html', 'w', encoding='utf-8') as f:
             f.write(html)
 
-        def _render_index_html(self, items_html):
-                return f"""<!doctype html>
+    def _render_index_html(self, items_html):
+        return f"""<!doctype html>
 <html lang=\"en\">
 <head>
-    <meta charset=\"utf-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-    <title>AI Agents Blog</title>
-    <link rel=\"stylesheet\" href=\"/styles.css\">
-    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
-    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
-    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">
+  <meta charset=\"utf-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+  <title>AI Agents Blog</title>
+  <link rel=\"stylesheet\" href=\"/styles.css\">
+  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
+  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
+  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">
 </head>
 <body>
-    <header class=\"hero\">
-        <div class=\"container\">
-            <div class=\"pill\">Autonomous Research • Daily Publishing</div>
-            <h1>AI Agents Blog</h1>
-            <p class=\"subtitle\">Research‑backed articles produced by a pipeline of AI agents: researcher → writer → editor → publisher.</p>
-            <div class=\"hero-actions\">
-                <a class=\"btn primary\" href=\"#latest\">Browse Latest</a>
-                <a class=\"btn ghost\" href=\"/posts\">Post Archive</a>
-            </div>
-        </div>
-    </header>
+  <header class=\"hero\">
+    <div class=\"container\">
+      <div class=\"pill\">Autonomous Research • Daily Publishing</div>
+      <h1>AI Agents Blog</h1>
+      <p class=\"subtitle\">Research‑backed articles produced by a pipeline of AI agents: researcher → writer → editor → publisher.</p>
+      <div class=\"hero-actions\">
+        <a class=\"btn primary\" href=\"#latest\">Browse Latest</a>
+        <a class=\"btn ghost\" href=\"/posts\">Post Archive</a>
+      </div>
+    </div>
+  </header>
 
-    <main class=\"container\" id=\"latest\">
-        <section class=\"section\">
-            <div class=\"section-head\">
-                <h2>Latest articles</h2>
-                <span class=\"muted\">Updated daily</span>
-            </div>
-            <div class=\"post-grid\">
-                {items_html}
-            </div>
-        </section>
-    </main>
+  <main class=\"container\" id=\"latest\">
+    <section class=\"section\">
+      <div class=\"section-head\">
+        <h2>Latest articles</h2>
+        <span class=\"muted\">Updated daily</span>
+      </div>
+      <div class=\"post-grid\">
+        {items_html}
+      </div>
+    </section>
+  </main>
 
-    <footer class=\"footer\">
-        <div class=\"container\">
-            <p>© {self._current_year()} AI Agents Blog • Built for continuous research and publishing.</p>
-        </div>
-    </footer>
+  <footer class=\"footer\">
+    <div class=\"container\">
+      <p>© {self._current_year()} AI Agents Blog • Built for continuous research and publishing.</p>
+    </div>
+  </footer>
 </body>
 </html>"""
 
-        def _render_post_html(self, post, title):
-                body = markdown.markdown(post.content or "", extensions=["fenced_code", "tables"])
-                date = post.get('date') or ''
-                return f"""<!doctype html>
+    def _render_post_html(self, post, title):
+        body = markdown.markdown(post.content or "", extensions=["fenced_code", "tables"])
+        date = post.get('date') or ''
+        return f"""<!doctype html>
 <html lang=\"en\">
 <head>
-    <meta charset=\"utf-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-    <title>{title} • AI Agents Blog</title>
-    <link rel=\"stylesheet\" href=\"/styles.css\">
-    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
-    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
-    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">
+  <meta charset=\"utf-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+  <title>{title} • AI Agents Blog</title>
+  <link rel=\"stylesheet\" href=\"/styles.css\">
+  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
+  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
+  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">
 </head>
 <body>
-    <header class=\"post-hero\">
-        <div class=\"container\">
-            <a class=\"back-link\" href=\"/\">← Back to home</a>
-            <h1>{title}</h1>
-            <div class=\"post-meta\">{date}</div>
-        </div>
-    </header>
+  <header class=\"post-hero\">
+    <div class=\"container\">
+      <a class=\"back-link\" href=\"/\">← Back to home</a>
+      <h1>{title}</h1>
+      <div class=\"post-meta\">{date}</div>
+    </div>
+  </header>
 
-    <main class=\"container post-body\">
-        {body}
-    </main>
+  <main class=\"container post-body\">
+    {body}
+  </main>
 
-    <footer class=\"footer\">
-        <div class=\"container\">
-            <p>© {self._current_year()} AI Agents Blog</p>
-        </div>
-    </footer>
+  <footer class=\"footer\">
+    <div class=\"container\">
+      <p>© {self._current_year()} AI Agents Blog</p>
+    </div>
+  </footer>
 </body>
 </html>"""
 
-        def _current_year(self):
-                from datetime import datetime
-                return datetime.utcnow().year
+    def _current_year(self):
+        from datetime import datetime
+        return datetime.utcnow().year
