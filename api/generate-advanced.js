@@ -12,6 +12,14 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const contentLength = Number(req.headers['content-length'] || 0);
+  const maxBytes = 3 * 1024 * 1024; // 3MB safety limit for serverless payloads
+  if (contentLength > maxBytes) {
+    return res.status(413).json({
+      error: 'Payload too large. Reduce total document size or number of sources and try again.'
+    });
+  }
+
   const {
     topic,
     writer = 'tech',
@@ -53,8 +61,10 @@ module.exports = async (req, res) => {
   try {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
-    // Run advanced writer
-    const pythonProcess = spawn('python3', [
+    // Run advanced writer (use platform-appropriate python binary)
+    const isWindows = process.platform === 'win32';
+    const pythonBin = process.env.PYTHON_BINARY || (isWindows ? 'python' : 'python3');
+    const pythonProcess = spawn(pythonBin, [
       path.join(process.cwd(), 'src', 'advanced_writer.py'),
       configPath
     ], {

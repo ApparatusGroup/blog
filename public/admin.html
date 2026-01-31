@@ -472,7 +472,7 @@
         <!-- Multi-Source Upload -->
         <div style="margin-bottom: 24px;">
           <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Source Materials (Optional)</label>
-          <p style="color: #6c757d; font-size: 0.875rem; margin-bottom: 12px;">Add documents, links, or notes. AI will synthesize all sources.</p>
+          <p style="color: #6c757d; font-size: 0.875rem; margin-bottom: 12px;">Add documents, links, or notes. AI will synthesize all sources. Max total upload: 3MB.</p>
           
           <!-- Links -->
           <div style="margin-bottom: 16px;">
@@ -615,6 +615,7 @@
     // Writer selection UI
     let links = [];
     let documents = [];
+    const MAX_UPLOAD_BYTES = 3 * 1024 * 1024; // 3MB
     
     window.selectWriter = (type) => {
       document.querySelectorAll('.writer-card').forEach(card => {
@@ -652,6 +653,13 @@
 
     window.handleDocuments = (event) => {
       const files = Array.from(event.target.files);
+      const currentSize = documents.reduce((sum, f) => sum + f.size, 0);
+      const newSize = files.reduce((sum, f) => sum + f.size, 0);
+      if (currentSize + newSize > MAX_UPLOAD_BYTES) {
+        alert('Total document size exceeds 3MB. Please upload smaller files or fewer documents.');
+        event.target.value = '';
+        return;
+      }
       files.forEach(file => {
         documents.push(file);
         const item = document.createElement('div');
@@ -678,6 +686,11 @@
     window.generateAdvancedArticle = async () => {
       const topic = document.getElementById('topicInput').value.trim();
       if (!topic) return alert('Please enter an article topic');
+
+      const totalSize = documents.reduce((sum, f) => sum + f.size, 0);
+      if (totalSize > MAX_UPLOAD_BYTES) {
+        return alert('Total document size exceeds 3MB. Please reduce your uploads.');
+      }
 
       const config = {
         topic,
@@ -730,7 +743,7 @@
           }, 5000);
           loadArticles();
         } else {
-          alert('Error: ' + result.error);
+          alert(result.error || 'Generation failed. Please try smaller uploads.');
         }
       } catch (err) {
         alert('Error generating article: ' + err.message);
