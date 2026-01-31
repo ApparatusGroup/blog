@@ -161,43 +161,73 @@ timestamp: ${timestamp}
 `;
 
   const fullContent = frontmatter + content;
-  const path = `public/posts/${slug}.md`;
+  
+  // Generate HTML
+  const html = generateHTML(topic, content, date);
+  
+  // Save both MD and HTML
+  const mdPath = `public/posts/${slug}.md`;
+  const htmlPath = `public/posts/${slug}.html`;
   
   // Get existing file SHA if it exists
-  let sha = null;
+  let mdSha = null;
+  let htmlSha = null;
   try {
-    const getRes = await fetch(
-      `https://api.github.com/repos/ApparatusGroup/blog/contents/${path}`,
+    const getMdRes = await fetch(
+      `https://api.github.com/repos/ApparatusGroup/blog/contents/${mdPath}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    if (getRes.ok) {
-      sha = (await getRes.json()).sha;
+    if (getMdRes.ok) {
+      mdSha = (await getMdRes.json()).sha;
+    }
+    
+    const getHtmlRes = await fetch(
+      `https://api.github.com/repos/ApparatusGroup/blog/contents/${htmlPath}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (getHtmlRes.ok) {
+      htmlSha = (await getHtmlRes.json()).sha;
     }
   } catch (e) {
-    // File doesn't exist yet
+    // Files don't exist yet
   }
 
-  // Upload file
-  const body = {
-    message: `Add article: ${topic}`,
-    content: Buffer.from(fullContent).toString('base64'),
-    ...(sha ? { sha } : {})
-  };
-
-  const response = await fetch(
-    `https://api.github.com/repos/ApparatusGroup/blog/contents/${path}`,
+  // Upload markdown file
+  await fetch(
+    `https://api.github.com/repos/ApparatusGroup/blog/contents/${mdPath}`,
     {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify({
+        message: `Add article: ${topic}`,
+        content: Buffer.from(fullContent).toString('base64'),
+        ...(mdSha ? { sha: mdSha } : {})
+      })
     }
   );
 
-  if (!response.ok) {
-    throw new Error(`GitHub error: ${response.status}`);
+  // Upload HTML file
+  const htmlResponse = await fetch(
+    `https://api.github.com/repos/ApparatusGroup/blog/contents/${htmlPath}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Add HTML for: ${topic}`,
+        content: Buffer.from(html).toString('base64'),
+        ...(htmlSha ? { sha: htmlSha } : {})
+      })
+    }
+  );
+
+  if (!htmlResponse.ok) {
+    throw new Error(`GitHub error: ${htmlResponse.status}`);
   }
   
   // Trigger Vercel deployment
@@ -209,4 +239,42 @@ timestamp: ${timestamp}
       console.error('Deploy hook failed:', e.message);
     }
   }
+}
+
+function generateHTML(title, markdownContent, date) {
+  // Simple markdown to HTML conversion
+  const htmlContent = markdownContent
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Home</a>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1>${title}</h1>
+      <time datetime="${date}">${date}</time>
+      <div class="content">
+        <p>${htmlContent}</p>
+      </div>
+    </article>
+  </main>
+</body>
+</html>`;
 }
