@@ -26,8 +26,14 @@ class Publisher:
         
         # Create frontmatter content
         date_str = datetime.now().strftime('%Y-%m-%d')
+        
+        # Escape title for YAML (quote if contains colon or special chars)
+        yaml_title = title
+        if ':' in yaml_title or '"' in yaml_title:
+            yaml_title = f'"{yaml_title}"'
+        
         full_content = f"""---
-title: {title}
+title: {yaml_title}
 date: {date_str}
 ---
 
@@ -77,15 +83,22 @@ date: {date_str}
 
     def _list_posts(self):
         posts = []
+        if not self.posts_dir.exists():
+            return posts
+            
         for p in sorted(self.posts_dir.glob('*.md'), reverse=True):
-            with open(p, 'r', encoding='utf-8') as f:
-                post = frontmatter.load(f)
-                posts.append({
-                    'title': post.get('title', 'Untitled'),
-                    'date': post.get('date', ''),
-                    'excerpt': self._excerpt(post.content or ''),
-                    'file': f"posts/{p.stem}.html",
-                })
+            try:
+                with open(p, 'r', encoding='utf-8') as f:
+                    post = frontmatter.load(f)
+                    posts.append({
+                        'title': post.get('title', 'Untitled'),
+                        'date': post.get('date', ''),
+                        'excerpt': self._excerpt(post.content or ''),
+                        'file': f"posts/{p.stem}.html",
+                    })
+            except Exception as e:
+                print(f"Warning: Could not parse {p}: {e}")
+                continue
         return posts
 
     def _update_index(self):
