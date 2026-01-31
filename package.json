@@ -1,0 +1,7 @@
+{
+  "name": "ai-agents-blog",
+  "version": "0.1.0",
+  "scripts": {
+    "vercel-build": "python -m src.main"
+  }
+}
