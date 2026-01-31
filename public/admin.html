@@ -718,7 +718,7 @@
       btn.innerHTML = '\ud83d\udd04 Generating (this may take several minutes)... <span class="loading"></span>';
 
       try {
-        const response = await fetch('/api/generate-advanced-python', {
+        const response = await fetch('/api/generate-advanced', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(config)
