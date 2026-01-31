@@ -44,4 +44,3 @@ class SchedulerService:
         except (KeyboardInterrupt, SystemExit):
             logger.info("Shutting down scheduler")
             self.scheduler.shutdown()
-*** End Patch
