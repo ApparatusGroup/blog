@@ -25,11 +25,15 @@ class SchedulerService:
 
     def run_once(self):
         logger.info("Running pipeline once at %s", datetime.utcnow().isoformat())
+        print("Running pipeline once at", datetime.utcnow().isoformat())
         try:
             path = self.orch.run_once()
             logger.info("Publish result: %s", path)
+            print("Published:", path)
         except Exception as e:
             logger.exception("Pipeline run failed: %s", e)
+            print("ERROR: Pipeline run failed:", str(e))
+            raise
 
     def run_local(self, interval_minutes=60):
         interval_minutes = int(os.getenv('INTERVAL_MINUTES', interval_minutes))
