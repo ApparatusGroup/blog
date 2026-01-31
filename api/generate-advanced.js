@@ -243,14 +243,43 @@ timestamp: ${timestamp}
 
 function generateHTML(title, markdownContent, date) {
   // Simple markdown to HTML conversion
-  const htmlContent = markdownContent
-    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+  let htmlContent = markdownContent
+    .split('\n\n')
+    .map(para => {
+      // Handle headings
+      if (para.startsWith('# ')) {
+        return `<h1>${para.substring(2)}</h1>`;
+      } else if (para.startsWith('## ')) {
+        return `<h2>${para.substring(3)}</h2>`;
+      } else if (para.startsWith('### ')) {
+        return `<h3>${para.substring(4)}</h3>`;
+      }
+      
+      // Handle lists
+      if (para.includes('\n- ') || para.startsWith('- ')) {
+        const items = para.split('\n').filter(l => l.trim());
+        return '<ul>' + items.map(item => 
+          item.startsWith('- ') ? `<li>${item.substring(2)}</li>` : `<li>${item}</li>`
+        ).join('') + '</ul>';
+      }
+      
+      // Handle numbered lists
+      if (/^\d+\.\s/.test(para)) {
+        const items = para.split('\n').filter(l => l.trim());
+        return '<ol>' + items.map(item => 
+          `<li>${item.replace(/^\d+\.\s/, '')}</li>`
+        ).join('') + '</ol>';
+      }
+      
+      // Regular paragraph with inline formatting
+      let formatted = para
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>');
+      
+      return para.trim() ? `<p>${formatted}</p>` : '';
+    })
+    .join('\n');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -261,20 +290,22 @@ function generateHTML(title, markdownContent, date) {
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="/">Home</a>
-    </nav>
-  </header>
-  <main>
-    <article>
-      <h1>${title}</h1>
-      <time datetime="${date}">${date}</time>
-      <div class="content">
-        <p>${htmlContent}</p>
-      </div>
-    </article>
-  </main>
+  <div class="container">
+    <header>
+      <nav>
+        <a href="/">← Home</a>
+      </nav>
+    </header>
+    <main>
+      <article>
+        <h1>${title}</h1>
+        <time datetime="${date}">${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+        <div class="content">
+          ${htmlContent}
+        </div>
+      </article>
+    </main>
+  </div>
 </body>
 </html>`;
 }
