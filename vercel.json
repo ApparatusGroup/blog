@@ -1,11 +1,5 @@
 ﻿{
   "cleanUrls": true,
-  "routes": [
-    {
-      "src": "/posts/(.+)$",
-      "dest": "/posts/.html"
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron",
