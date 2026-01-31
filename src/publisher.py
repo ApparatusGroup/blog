@@ -15,8 +15,11 @@ class Publisher:
         self._copy_static_assets()
 
     def _slugify(self, title):
-        slug = title.lower().strip().replace(' ', '-')
-        return ''.join(ch for ch in slug if ch.isalnum() or ch == '-')
+        import re
+        slug = title.lower().strip()
+        slug = re.sub(r'[^a-z0-9]+', '-', slug)
+        slug = slug.strip('-')
+        return slug
 
     def _copy_static_assets(self):
         """Copy CSS and static assets to public directory."""
