@@ -1,10 +1,4 @@
-/**
- * Advanced Article Generation API
- * Self-contained Node.js implementation using OpenRouter API
- */
-
 export default async function handler(req, res) {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,255 +11,185 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const config = req.body || {};
-  const topic = (config.topic || '').trim();
-
-  if (!topic) {
-    return res.status(400).json({ success: false, error: 'Topic is required' });
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  
-  // Writer configurations
-  const writers = {
-    tech: {
-      name: 'Tech News Writer',
-      style: 'Fast-paced tech journalism. Engaging, highlights innovation. Use active voice, short paragraphs.',
-      wordTarget: getWordTarget(config.length)
-    },
-    journalism: {
-      name: 'Investigative Journalist', 
-      style: 'Long-form critical analysis. Cite sources inline, balanced perspective, thorough research.',
-      wordTarget: getWordTarget(config.length)
-    },
-    educational: {
-      name: 'Educational Writer',
-      style: 'Simplifies complex topics. Clear explanations, use analogies, myth-busting approach.',
-      wordTarget: getWordTarget(config.length)
-    }
-  };
-
-  const writer = writers[config.writer] || writers.tech;
-  const tone = config.tone || 'professional';
-  const focus = config.focus || 'overview';
-
-  // Build source context from uploaded materials
-  let sourceContext = '';
-  if (config.sources) {
-    const { documents = [], links = [], rawText = '' } = config.sources;
-    
-    if (documents.length > 0) {
-      sourceContext += '\n\n## Uploaded Documents:\n';
-      documents.forEach((doc, i) => {
-        sourceContext += `\n### Document ${i + 1}: ${doc.name}\n${doc.content}\n`;
-      });
-    }
-    
-    if (links.length > 0) {
-      sourceContext += '\n\n## Reference Links:\n';
-      links.forEach(link => {
-        sourceContext += `- ${link}\n`;
-      });
-    }
-    
-    if (rawText.trim()) {
-      sourceContext += `\n\n## Additional Notes:\n${rawText}\n`;
-    }
-  }
-
-  const systemPrompt = `You are the ${writer.name}. Writing style: ${writer.style}
-
-Guidelines:
-- Tone: ${tone}
-- Focus: ${focus}
-- Target length: ${writer.wordTarget} words
-- Write in a human, natural voice - avoid AI-sounding phrases
-- Do NOT use phrases like "In conclusion", "It's important to note", "In today's world"
-- Vary sentence structure and paragraph length
-- Use specific examples and concrete details
-- Format in clean Markdown with proper headings`;
-
-  const userPrompt = `Write an article about: ${topic}
-${sourceContext ? `\nUse these source materials for research and context:${sourceContext}` : ''}
-
-Create a well-researched, engaging article that sounds authentically human.`;
-
   try {
-    let content;
-    
-    if (apiKey) {
-      // Use OpenRouter API
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://blog-mu-opal-43.vercel.app',
-          'X-Title': 'Blog Generator'
-        },
-        body: JSON.stringify({
-          model: 'anthropic/claude-3.5-sonnet',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          max_tokens: 4000,
-          temperature: 0.7
-        })
-      });
+    const config = req.body || {};
+    const topic = (config.topic || '').trim();
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData}`);
-      }
-
-      const data = await response.json();
-      content = data.choices?.[0]?.message?.content;
-      
-      if (!content) {
-        throw new Error('No content returned from API');
-      }
-    } else {
-      // Fallback template when no API key
-      content = generateTemplate(topic, writer, config);
+    if (!topic) {
+      return res.status(400).json({ success: false, error: 'Topic is required' });
     }
 
-    // Generate slug and frontmatter
+    // Generate content
+    const content = await generateContent(topic, config);
+    
+    // Create slug
     const slug = topic.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
       .substring(0, 50);
-    
-    const date = new Date().toISOString().split('T')[0];
-    const safeTitle = topic.includes(':') ? `"${topic}"` : topic;
-    
-    const fullContent = `---
-title: ${safeTitle}
-date: ${date}
-author: ${writer.name}
-tags: [${config.writer || 'tech'}, ${focus}]
----
 
-${content}`;
-
-    // Save to GitHub
-    const githubToken = process.env.GITHUB_TOKEN;
-    const filePath = `public/posts/${slug}.md`;
-    
+    // Try to save to GitHub if token exists
     let saved = false;
-    let saveError = null;
-    
-    if (githubToken) {
+    if (process.env.GITHUB_TOKEN) {
       try {
-        saved = await saveToGitHub(githubToken, filePath, fullContent, `Generated: ${topic}`);
+        await commitToGitHub(slug, content, topic);
+        saved = true;
       } catch (err) {
-        saveError = err.message;
+        console.error('GitHub save failed:', err.message);
       }
     }
-    
+
     return res.status(200).json({
       success: true,
       title: topic,
       slug: slug,
       saved: saved,
-      saveError: saveError,
-      message: saved ? 'Article generated and published!' : 'Article generated (publishing requires GitHub token)'
+      message: saved ? 'Article published!' : 'Article generated (GitHub save disabled)'
     });
 
   } catch (error) {
-    console.error('Generation error:', error);
+    console.error('Handler error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to generate article',
-      details: error.message
+      error: error.message || 'Generation failed'
     });
   }
 }
 
-function getWordTarget(length) {
-  const targets = {
-    short: '500-800',
-    medium: '1000-1500',
-    long: '2000-2500',
-    comprehensive: '3000+'
+async function generateContent(topic, config) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  
+  if (!apiKey) {
+    return createTemplate(topic);
+  }
+
+  const writers = {
+    tech: 'Fast-paced tech news. Latest AI and innovation. Engaging, active voice, short paragraphs.',
+    journalism: 'Long-form investigative analysis. Cite sources. Balanced, thorough, critical perspective.',
+    educational: 'Simplifies complex topics. Clear explanations, analogies, myth-busting.'
   };
-  return targets[length] || targets.medium;
+
+  const style = writers[config.writer] || writers.tech;
+  const tone = config.tone || 'professional';
+  const length = config.length || 'medium';
+
+  const wordCounts = { short: 600, medium: 1200, long: 2000, comprehensive: 3000 };
+  const targetWords = wordCounts[length] || 1200;
+
+  const prompt = `Write a ${targetWords}-word article about "${topic}".
+
+Style: ${style}
+Tone: ${tone}
+
+Requirements:
+- Use natural, human language (avoid AI clichés)
+- Vary sentence structure and paragraph length
+- Include specific details and examples
+- Format with Markdown headings
+- Do NOT use phrases like "In conclusion", "It's important to note", "In today's world"`;
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://blog-mu-opal-43.vercel.app',
+      'X-Title': 'Blog Generator'
+    },
+    body: JSON.stringify({
+      model: 'anthropic/claude-3.5-sonnet',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 4000,
+      temperature: 0.7
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error('No content from API');
+  }
+
+  return content;
 }
 
-function generateTemplate(topic, writer, config) {
+function createTemplate(topic) {
   return `# ${topic}
-
-*Generated by ${writer.name}*
 
 ## Introduction
 
-This article explores the topic of ${topic}, providing insights and analysis based on the latest developments in the field.
+This article explores ${topic}, examining recent developments and key implications in the field.
 
 ## Key Points
 
-The subject of ${topic} encompasses several important aspects that deserve attention:
+${topic} encompasses several important dimensions:
 
-1. **Current State**: The landscape continues to evolve rapidly with new innovations emerging regularly.
-
-2. **Implications**: These developments have significant implications for various stakeholders.
-
-3. **Future Outlook**: Experts anticipate continued growth and evolution in this space.
+- **Current landscape**: Rapidly evolving with new innovations
+- **Impact**: Significant implications for stakeholders
+- **Future direction**: Expected growth and transformation
 
 ## Analysis
 
-When examining ${topic}, it's essential to consider both the opportunities and challenges it presents. The technology and ideas driving this field are constantly advancing, creating new possibilities while also raising important questions.
+${topic} represents an area of ongoing development. Key considerations include the opportunities it presents alongside the challenges that need addressing.
 
 ## Conclusion
 
-${topic} represents a fascinating area of development that will likely continue to shape our world in meaningful ways. Staying informed about these trends is valuable for anyone interested in technology and innovation.
-
----
-
-*Note: This is a template article. For AI-generated content with full research capabilities, please configure your OpenRouter API key in your Vercel environment variables.*`;
+As ${topic} continues to develop, staying informed about trends and developments in this space remains valuable for anyone interested in the field.`;
 }
 
-async function saveToGitHub(token, filePath, content, message) {
-  const owner = 'ApparatusGroup';
-  const repo = 'blog';
+async function commitToGitHub(slug, content, topic) {
+  const token = process.env.GITHUB_TOKEN;
+  const date = new Date().toISOString().split('T')[0];
   
-  // Get current file (if it exists) to get its SHA
+  const frontmatter = `---
+title: ${topic}
+date: ${date}
+---
+
+`;
+
+  const fullContent = frontmatter + content;
+  const path = `public/posts/${slug}.md`;
+  
+  // Get existing file SHA if it exists
   let sha = null;
   try {
     const getRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`,
+      `https://api.github.com/repos/ApparatusGroup/blog/contents/${path}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (getRes.ok) {
-      const data = await getRes.json();
-      sha = data.sha;
+      sha = (await getRes.json()).sha;
     }
-  } catch (err) {
-    // File doesn't exist, which is fine
+  } catch (e) {
+    // File doesn't exist yet
   }
-  
-  // Create or update file
+
+  // Upload file
+  const body = {
+    message: `Add article: ${topic}`,
+    content: Buffer.from(fullContent).toString('base64'),
+    ...(sha ? { sha } : {})
+  };
+
   const response = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`,
+    `https://api.github.com/repos/ApparatusGroup/blog/contents/${path}`,
     {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/vnd.github.v3+json'
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        message: `${message}\n\nGenerated by Blog AI on ${new Date().toISOString()}`,
-        content: Buffer.from(content).toString('base64'),
-        ...(sha && { sha })
-      })
+      body: JSON.stringify(body)
     }
   );
-  
+
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`GitHub API error: ${response.status} - ${error}`);
+    throw new Error(`GitHub error: ${response.status}`);
   }
-  
-  return true;
-}
 }
