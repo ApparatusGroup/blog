@@ -1,5 +1,6 @@
-import json
+﻿import json
 import os
+import sys
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
@@ -10,6 +11,9 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(body)
 
@@ -27,8 +31,8 @@ class handler(BaseHTTPRequestHandler):
 
             root = Path(__file__).resolve().parent.parent
             os.chdir(root)
-            if str(root) not in os.sys.path:
-                os.sys.path.insert(0, str(root))
+            if str(root) not in sys.path:
+                sys.path.insert(0, str(root))
 
             from src.orchestrator import Orchestrator
 
@@ -47,9 +51,11 @@ class handler(BaseHTTPRequestHandler):
                 "message": f"Article for \"{topic}\" generated successfully"
             })
         except Exception as exc:
+            import traceback
             return self._send(500, {
                 "error": "Failed to generate article",
-                "details": str(exc)
+                "details": str(exc),
+                "traceback": traceback.format_exc()
             })
 
     def do_OPTIONS(self):
