@@ -397,26 +397,131 @@
 
       <!-- Generate Article -->
       <div class="section">
-        <h2>🎯 Research & Generate Article</h2>
+        <h2>✍️ Create Article</h2>
         <div id="generateSuccess" class="success" style="display: none;"></div>
         
-        <h3>Quick Generate</h3>
-        <div class="form-inline">
-          <input type="text" id="topicInput" placeholder="Enter topic (e.g., 'Robotics in Healthcare')" />
-          <button class="btn-secondary" onclick="generateArticle()">
-            <span id="generateBtnText">Research & Publish</span>
-          </button>
+        <!-- Writer Selection -->
+        <h3>Select Writer Style</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 32px;">
+          <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('tech')">
+            <input type="radio" name="writer" value="tech" checked style="margin-right: 8px;">
+            <div>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">🚀 Tech News</h4>
+              <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Latest AI and emerging tech. Fast-paced, engaging, highlights innovation.</p>
+            </div>
+          </label>
+          
+          <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('journalism')">
+            <input type="radio" name="writer" value="journalism" style="margin-right: 8px;">
+            <div>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">📰 Journalism</h4>
+              <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Long-form critical analysis. Heavy citations, investigative, balanced perspective.</p>
+            </div>
+          </label>
+          
+          <label class="writer-card" style="cursor: pointer; padding: 20px; border: 2px solid #e9ecef; border-radius: 12px; transition: all 0.2s;" onclick="selectWriter('educational')">
+            <input type="radio" name="writer" value="educational" style="margin-right: 8px;">
+            <div>
+              <h4 style="margin: 0 0 8px; color: #0a9e5b;">📚 Educational</h4>
+              <p style="margin: 0; font-size: 0.875rem; color: #6c757d;">Simplifies complex topics. Clear explanations, infographics, myth-busting.</p>
+            </div>
+          </label>
         </div>
 
-        <h3 style="margin-top: 32px;">Upload Research Content</h3>
-        <p style="color: #6c757d; font-size: 0.875rem; margin-bottom: 16px;">Paste research notes or article content, and AI will format it into a professional blog post.</p>
-        <div class="form-inline" style="flex-direction: column;">
-          <input type="text" id="uploadTitle" placeholder="Article title" />
-          <textarea id="uploadContent" placeholder="Paste your research notes or article content here..."></textarea>
-          <button class="btn-secondary" onclick="uploadResearch()" style="align-self: flex-end;">
-            <span id="uploadBtnText">Generate Article from Research</span>
-          </button>
+        <!-- Article Configuration -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Article Length</label>
+            <select id="articleLength" style="width: 100%; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;">
+              <option value="short">Short (500-800 words)</option>
+              <option value="medium" selected>Medium (1000-1500 words)</option>
+              <option value="long">Long (2000-3000 words)</option>
+              <option value="deep-dive">Deep Dive (3500+ words)</option>
+            </select>
+          </div>
+          
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Tone</label>
+            <select id="articleTone" style="width: 100%; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;">
+              <option value="professional" selected>Professional</option>
+              <option value="conversational">Conversational</option>
+              <option value="academic">Academic</option>
+              <option value="enthusiastic">Enthusiastic</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Focus Area</label>
+            <select id="articleFocus" style="width: 100%; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;">
+              <option value="overview" selected>Overview</option>
+              <option value="technical">Technical Deep-Dive</option>
+              <option value="business">Business Impact</option>
+              <option value="social">Social Implications</option>
+              <option value="future">Future Predictions</option>
+            </select>
+          </div>
         </div>
+
+        <!-- Topic Input -->
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Article Title/Topic</label>
+          <input type="text" id="topicInput" placeholder="e.g., 'The Future of Quantum Computing in Healthcare'" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem;" />
+        </div>
+
+        <!-- Multi-Source Upload -->
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;">Source Materials (Optional)</label>
+          <p style="color: #6c757d; font-size: 0.875rem; margin-bottom: 12px;">Add documents, links, or notes. AI will synthesize all sources.</p>
+          
+          <!-- Links -->
+          <div style="margin-bottom: 16px;">
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input type="url" id="linkInput" placeholder="Add URL (research paper, article, etc.)" style="flex: 1; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;" />
+              <button class="btn-secondary" onclick="addLink()" style="padding: 10px 20px;">Add Link</button>
+            </div>
+            <div id="linksList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+          </div>
+          
+          <!-- Documents -->
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; padding: 40px; border: 2px dashed #e9ecef; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0a9e5b'" onmouseout="this.style.borderColor='#e9ecef'">
+              <input type="file" id="documentUpload" multiple accept=".txt,.md,.pdf,.docx" style="display: none;" onchange="handleDocuments(event)" />
+              <span style="color: #6c757d;">📎 Drop files here or click to upload</span>
+              <br><span style="font-size: 0.75rem; color: #9ca3af;">Supports: TXT, MD, PDF, DOCX</span>
+            </label>
+            <div id="documentsList" style="margin-top: 12px;"></div>
+          </div>
+          
+          <!-- Raw Text -->
+          <div>
+            <textarea id="rawTextInput" placeholder="Or paste research notes, data, quotes, etc. directly here..." style="width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- Generation Options -->
+        <div style="margin-bottom: 24px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+          <h4 style="margin: 0 0 12px; font-size: 0.9375rem;">Quality Controls</h4>
+          <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+            <input type="checkbox" id="multiPass" checked style="margin-right: 8px;">
+            <span style="font-size: 0.875rem;">Multi-pass editing (AI reviews and refines output)</span>
+          </label>
+          <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+            <input type="checkbox" id="factCheck" checked style="margin-right: 8px;">
+            <span style="font-size: 0.875rem;">Fact-check against sources</span>
+          </label>
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="humanize" checked style="margin-right: 8px;">
+            <span style="font-size: 0.875rem;">Humanize tone (reduce AI detection patterns)</span>
+          </label>
+        </div>
+
+        <!-- Generate Button -->
+        <button class="btn-secondary" onclick="generateAdvancedArticle()" style="width: 100%; padding: 16px; font-size: 1.0625rem;">
+          <span id="generateBtnText">✨ Generate Professional Article</span>
+        </button>
+        
+        <p style="text-align: center; color: #6c757d; font-size: 0.8125rem; margin-top: 12px;" id="estimatedTime">Estimated time: 2-3 minutes</p>
       </div>
 
       <!-- Schedule Post -->
@@ -507,27 +612,119 @@
       await signOut(auth);
     };
 
-    window.generateArticle = async () => {
+    // Writer selection UI
+    let links = [];
+    let documents = [];
+    
+    window.selectWriter = (type) => {
+      document.querySelectorAll('.writer-card').forEach(card => {
+        card.style.borderColor = '#e9ecef';
+        card.style.background = 'white';
+      });
+      event.currentTarget.style.borderColor = '#0a9e5b';
+      event.currentTarget.style.background = '#f0fdf4';
+      
+      const times = {
+        tech: '2-3 minutes',
+        journalism: '4-6 minutes',
+        educational: '5-8 minutes (includes infographic generation)'
+      };
+      document.getElementById('estimatedTime').textContent = `Estimated time: ${times[type]}`;
+    };
+
+    window.addLink = () => {
+      const input = document.getElementById('linkInput');
+      const url = input.value.trim();
+      if (!url) return;
+      
+      links.push(url);
+      const tag = document.createElement('div');
+      tag.style.cssText = 'display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f0fdf4; border: 1px solid #0a9e5b; border-radius: 6px; font-size: 0.875rem;';
+      tag.innerHTML = `<span>\ud83d\udd17 ${new URL(url).hostname}</span><button onclick="removeLink('${url}')" style="border: none; background: none; color: #dc3545; cursor: pointer; padding: 0; font-size: 1.125rem;">\u00d7</button>`;
+      document.getElementById('linksList').appendChild(tag);
+      input.value = '';
+    };
+    
+    window.removeLink = (url) => {
+      links = links.filter(l => l !== url);
+      event.target.closest('div').remove();
+    };
+
+    window.handleDocuments = (event) => {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        documents.push(file);
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;';
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.5rem;">\ud83d\udcc4</span>
+            <div>
+              <div style="font-weight: 500;">${file.name}</div>
+              <div style="font-size: 0.75rem; color: #6c757d;">${(file.size / 1024).toFixed(1)} KB</div>
+            </div>
+          </div>
+          <button onclick="removeDocument('${file.name}')" style="border: none; background: none; color: #dc3545; cursor: pointer; font-size: 1.25rem;">\u00d7</button>
+        `;
+        document.getElementById('documentsList').appendChild(item);
+      });
+    };
+    
+    window.removeDocument = (name) => {
+      documents = documents.filter(d => d.name !== name);
+      event.target.closest('div').remove();
+    };
+
+    window.generateAdvancedArticle = async () => {
       const topic = document.getElementById('topicInput').value.trim();
-      if (!topic) return alert('Please enter a topic');
+      if (!topic) return alert('Please enter an article topic');
+
+      const config = {
+        topic,
+        writer: document.querySelector('input[name="writer"]:checked').value,
+        length: document.getElementById('articleLength').value,
+        tone: document.getElementById('articleTone').value,
+        focus: document.getElementById('articleFocus').value,
+        links: links,
+        rawText: document.getElementById('rawTextInput').value.trim(),
+        multiPass: document.getElementById('multiPass').checked,
+        factCheck: document.getElementById('factCheck').checked,
+        humanize: document.getElementById('humanize').checked,
+        userId: auth.currentUser.uid
+      };
+
+      if (documents.length > 0) {
+        config.documents = await Promise.all(documents.map(async file => {
+          const text = await file.text();
+          return { name: file.name, content: text };
+        }));
+      }
 
       const btn = document.getElementById('generateBtnText');
       const originalText = btn.textContent;
-      btn.innerHTML = 'Researching... <span class="loading"></span>';
+      btn.innerHTML = '\ud83d\udd04 Generating (this may take several minutes)... <span class="loading"></span>';
 
       try {
-        const response = await fetch('/api/generate-article', {
+        const response = await fetch('/api/generate-advanced', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic, userId: auth.currentUser.uid })
+          body: JSON.stringify(config)
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
-          document.getElementById('generateSuccess').textContent = `Article "${topic}" published successfully!`;
+          document.getElementById('generateSuccess').textContent = `\u2705 Article published: ${result.title}`;
           document.getElementById('generateSuccess').style.display = 'block';
+          
           document.getElementById('topicInput').value = '';
+          document.getElementById('rawTextInput').value = '';
+          links = [];
+          documents = [];
+          document.getElementById('linksList').innerHTML = '';
+          document.getElementById('documentsList').innerHTML = '';
+          document.getElementById('documentUpload').value = '';
+          
           setTimeout(() => {
             document.getElementById('generateSuccess').style.display = 'none';
           }, 5000);
@@ -537,47 +734,9 @@
         }
       } catch (err) {
         alert('Error generating article: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
       }
-
-      btn.textContent = originalText;
-    };
-
-    window.uploadResearch = async () => {
-      const title = document.getElementById('uploadTitle').value.trim();
-      const content = document.getElementById('uploadContent').value.trim();
-      
-      if (!title || !content) return alert('Please enter both title and content');
-
-      const btn = document.getElementById('uploadBtnText');
-      const originalText = btn.textContent;
-      btn.innerHTML = 'Generating... <span class="loading"></span>';
-
-      try {
-        const response = await fetch('/api/upload-research', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content, userId: auth.currentUser.uid })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          document.getElementById('generateSuccess').textContent = `Article "${title}" generated and published!`;
-          document.getElementById('generateSuccess').style.display = 'block';
-          document.getElementById('uploadTitle').value = '';
-          document.getElementById('uploadContent').value = '';
-          setTimeout(() => {
-            document.getElementById('generateSuccess').style.display = 'none';
-          }, 5000);
-          loadArticles();
-        } else {
-          alert('Error: ' + result.error);
-        }
-      } catch (err) {
-        alert('Error: ' + err.message);
-      }
-
-      btn.textContent = originalText;
     };
 
     window.schedulePost = async () => {
