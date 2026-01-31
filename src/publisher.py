@@ -60,17 +60,17 @@ class Publisher:
 
     def _update_index(self):
         posts = self._list_posts()
-                html_items = "\n".join([
-                        """
-                        <article class="post-card">
-                            <div class="post-meta">{date}</div>
-                            <h2><a href="{file}">{title}</a></h2>
-                            <p>{excerpt}</p>
-                            <a class="read-more" href="{file}">Read article →</a>
-                        </article>
-                        """.format(date=p['date'], file=p['file'], title=p['title'], excerpt=p['excerpt'])
-                        for p in posts
-                ])
+        html_items = "\n".join([
+            """
+            <article class="post-card">
+              <div class="post-meta">{date}</div>
+              <h2><a href="{file}">{title}</a></h2>
+              <p>{excerpt}</p>
+              <a class="read-more" href="{file}">Read article →</a>
+            </article>
+            """.format(date=p['date'], file=p['file'], title=p['title'], excerpt=p['excerpt'])
+            for p in posts
+        ])
 
                 html = self._render_index_html(html_items)
         with open(self.public_dir / 'index.html', 'w', encoding='utf-8') as f:
