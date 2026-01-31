@@ -1,9 +1,9 @@
 ﻿{
   "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/posts/:slug",
-      "destination": "/posts/:slug.html"
+      "src": "/posts/(.+)$",
+      "dest": "/posts/.html"
     }
   ],
   "crons": [
