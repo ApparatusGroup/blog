@@ -2,6 +2,10 @@
   "name": "ai-agents-blog",
   "version": "0.1.0",
   "scripts": {
-    "vercel-build": "python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt && .venv/bin/python -m src.main"
+    "vercel-build": "python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt && .venv/bin/python -m src.main",
+    "dev": "python -m http.server 8000"
+  },
+  "dependencies": {
+    "firebase": "^10.7.2"
   }
 }
