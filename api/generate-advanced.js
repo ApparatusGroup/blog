@@ -100,6 +100,15 @@ module.exports = async (req, res) => {
       console.error(data.toString());
     });
 
+    pythonProcess.on('error', (err) => {
+      console.error('Failed to start python process:', err);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to start Python process',
+        details: err.message
+      });
+    });
+
     pythonProcess.on('close', (code) => {
       // Cleanup
       try {
@@ -125,7 +134,8 @@ module.exports = async (req, res) => {
         console.error('Python process failed:', errorOutput);
         res.status(500).json({
           success: false,
-          error: errorOutput || 'Generation failed'
+          error: 'Generation failed',
+          details: (errorOutput || '').slice(0, 2000) || 'No error output'
         });
       }
     });
