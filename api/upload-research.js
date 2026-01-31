@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 const path = require('path');
 
 export default async function handler(req, res) {
@@ -39,7 +39,23 @@ print("Published successfully")
 
     fs.writeFileSync('/tmp/publish_script.py', pythonScript);
     
-    execSync('python3 /tmp/publish_script.py', {
+    const candidates = [process.env.PYTHON_BINARY, 'python3', 'python'].filter(Boolean);
+    let pythonBin = null;
+    for (const candidate of candidates) {
+      const check = spawnSync(candidate, ['-V']);
+      if (!check.error) {
+        pythonBin = candidate;
+        break;
+      }
+    }
+
+    if (!pythonBin) {
+      return res.status(500).json({
+        error: 'Python runtime not available. Set PYTHON_BINARY or deploy with a Python runtime.'
+      });
+    }
+
+    execSync(`${pythonBin} /tmp/publish_script.py`, {
       cwd: process.cwd(),
       stdio: 'inherit'
     });

@@ -3,7 +3,7 @@
  * Handles multi-source, multi-writer article generation with quality controls
  */
 
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -61,9 +61,22 @@ module.exports = async (req, res) => {
   try {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
-    // Run advanced writer (use platform-appropriate python binary)
-    const isWindows = process.platform === 'win32';
-    const pythonBin = process.env.PYTHON_BINARY || (isWindows ? 'python' : 'python3');
+    // Run advanced writer (detect available python binary)
+    const candidates = [process.env.PYTHON_BINARY, 'python3', 'python'].filter(Boolean);
+    let pythonBin = null;
+    for (const candidate of candidates) {
+      const check = spawnSync(candidate, ['-V']);
+      if (!check.error) {
+        pythonBin = candidate;
+        break;
+      }
+    }
+
+    if (!pythonBin) {
+      return res.status(500).json({
+        error: 'Python runtime not available. Set PYTHON_BINARY or deploy with a Python runtime.'
+      });
+    }
     const pythonProcess = spawn(pythonBin, [
       path.join(process.cwd(), 'src', 'advanced_writer.py'),
       configPath
